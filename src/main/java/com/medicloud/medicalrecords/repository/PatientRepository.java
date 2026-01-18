@@ -12,10 +12,14 @@
 package com.medicloud.medicalrecords.repository;
 
 import com.medicloud.medicalrecords.model.Patient;
+import com.medicloud.medicalrecords.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Allows searching for names like "John" or "Johnny"
     List<Patient> findByNameContainingIgnoreCase(String name);
+    Optional<Patient> findByUser(User user);
 }
+

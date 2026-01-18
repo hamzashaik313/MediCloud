@@ -25,7 +25,12 @@ public class AdminActivityLogController {
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String role
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                org.springframework.data.domain.Sort.by("timestamp").descending()
+        );
+
 
         if (username != null) {
             return service.getByUsername(username, pageable);
