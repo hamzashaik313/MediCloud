@@ -38,4 +38,17 @@ public class ActivityLogService {
 
         repository.save(log);
     }
+    public void logManual(String username, String role, String action, Long entityId) {
+
+        ActivityLog log = new ActivityLog(
+                username,
+                role,
+                action,
+                entityId
+        );
+
+        repository.save(log);
+    }
+
+
 }

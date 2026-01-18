@@ -1,5 +1,6 @@
 package com.medicloud.medicalrecords.auth;
 
+import com.medicloud.medicalrecords.activity.ActivityLogService;
 import com.medicloud.medicalrecords.auth.dto.LoginRequest;
 import com.medicloud.medicalrecords.auth.dto.LoginResponse;
 import com.medicloud.medicalrecords.security.JwtUtil;
@@ -18,6 +19,10 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private ActivityLogService activityLogService;
+
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
@@ -32,8 +37,8 @@ public class AuthController {
 
         String role = authentication.getAuthorities()
                 .stream()
-                .map(GrantedAuthority::getAuthority)
                 .findFirst()
+                .map(a -> a.getAuthority())
                 .orElse("ROLE_USER");
 
         String token = jwtUtil.generateToken(
@@ -41,6 +46,18 @@ public class AuthController {
                 role
         );
 
+        // LOG LOGIN
+        activityLogService.logManual(
+                authentication.getName(),
+                role,
+                "LOGIN",
+                null
+        );
+
+
         return new LoginResponse(token);
     }
+
+
+
 }
