@@ -44,6 +44,39 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+//    @PostMapping("/login")
+//    public LoginResponse login(@RequestBody LoginRequest request) {
+//
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        request.getUsername(),
+//                        request.getPassword()
+//                )
+//        );
+//
+//        String role = authentication.getAuthorities()
+//                .stream()
+//                .findFirst()
+//                .map(a -> a.getAuthority())
+//                .orElse("ROLE_USER");
+//
+//        String token = jwtUtil.generateToken(
+//                authentication.getName(),
+//                role
+//        );
+//
+//        // LOG LOGIN
+//        activityLogService.logManual(
+//                authentication.getName(),
+//                role,
+//                "LOGIN",
+//                null
+//        );
+//
+//
+//        return new LoginResponse(token);
+//    }
+
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
 
@@ -65,7 +98,6 @@ public class AuthController {
                 role
         );
 
-        // LOG LOGIN
         activityLogService.logManual(
                 authentication.getName(),
                 role,
@@ -73,9 +105,10 @@ public class AuthController {
                 null
         );
 
-
-        return new LoginResponse(token);
+        // ✅ THIS IS THE FIX
+        return new LoginResponse(token, role);
     }
+
     @PostMapping("/register-patient")
     public ResponseEntity<String> registerPatient(
             @RequestBody PatientRegisterRequest request
@@ -102,8 +135,4 @@ public class AuthController {
 
         return ResponseEntity.ok("Patient registered successfully");
     }
-
-
-
-
 }
