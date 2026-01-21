@@ -8,7 +8,7 @@ export async function login(username, password) {
 
   const { token, role } = response.data;
 
-  // ✅ STORE AUTH STATE
+  //  STORE AUTH STATE
   localStorage.setItem("token", token);
   localStorage.setItem("role", role);
 

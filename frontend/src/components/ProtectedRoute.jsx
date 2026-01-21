@@ -4,16 +4,16 @@ export default function ProtectedRoute({ role, children }) {
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
 
-  // ❌ Not logged in
+  //  Not logged in
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // ❌ Role mismatch
+  //  Role mismatch
   if (userRole !== role) {
     return <Navigate to="/login" replace />;
   }
 
-  // ✅ Authorized
+  // Authorized
   return children;
 }

@@ -1,17 +1,11 @@
 import api from "./api";
 
-/**
- * Get logged-in patient's profile
- */
-export const getProfile = async () => {
-  const res = await api.get("/patient/me");
+export const getMyRecords = async () => {
+  const res = await api.get("/patient/my-records");
   return res.data;
 };
 
-/**
- * Get logged-in patient's medical records
- */
-export const getMyRecords = async () => {
-  const res = await api.get("/patient/my-records");
+export const downloadRecord = async (recordId) => {
+  const res = await api.get(`/patient/download/${recordId}`);
   return res.data;
 };

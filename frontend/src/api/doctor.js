@@ -1,23 +1,3 @@
-// import api from "./api";
-
-// export const getPatients = async () => {
-//   const res = await api.get("/doctor/patients");
-//   return res.data;
-// };
-
-// export const uploadRecord = async (patientId, file, notes) => {
-//   const formData = new FormData();
-//   formData.append("file", file);
-//   formData.append("patientId", patientId);
-//   formData.append("notes", notes);
-
-//   return api.post("/doctor/upload-record", formData, {
-//     headers: {
-//       "Content-Type": "multipart/form-data",
-//     },
-//   });
-// };
-
 import api from "./api";
 
 /**

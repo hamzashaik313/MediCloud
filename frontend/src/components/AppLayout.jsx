@@ -79,3 +79,45 @@ export default function AppLayout({ title, children }) {
     </Box>
   );
 }
+
+// import { Box, AppBar, Toolbar, Typography, Button } from "@mui/material";
+// import LogoutIcon from "@mui/icons-material/Logout";
+// import { useNavigate, Outlet } from "react-router-dom";
+// import Sidebar from "./Sidebar";
+
+// export default function AppLayout({ title }) {
+//   const navigate = useNavigate();
+
+//   const logout = () => {
+//     localStorage.clear();
+//     navigate("/login");
+//   };
+
+//   return (
+//     <Box sx={{ display: "flex", minHeight: "100vh" }}>
+//       {/* Sidebar */}
+//       <Sidebar />
+
+//       {/* Main Area */}
+//       <Box sx={{ flexGrow: 1 }}>
+//         <AppBar position="static" elevation={0} color="inherit">
+//           <Toolbar sx={{ justifyContent: "space-between" }}>
+//             <Typography variant="h6">{title}</Typography>
+//             <Button
+//               variant="outlined"
+//               startIcon={<LogoutIcon />}
+//               onClick={logout}
+//             >
+//               Logout
+//             </Button>
+//           </Toolbar>
+//         </AppBar>
+
+//         {/* 🔥 ROUTER OUTPUT */}
+//         <Box sx={{ p: 4 }}>
+//           <Outlet />
+//         </Box>
+//       </Box>
+//     </Box>
+//   );
+// }

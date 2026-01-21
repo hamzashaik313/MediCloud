@@ -3,130 +3,88 @@ import {
   Card,
   CardContent,
   Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Button,
+  Stack,
+  Chip,
   Divider,
-  Grid,
 } from "@mui/material";
 import AppLayout from "../../components/AppLayout";
 import { useEffect, useState } from "react";
-import { getProfile, getMyRecords } from "../../api/patient";
+import { getMyRecords, downloadRecord } from "../../api/patient";
 
 export default function PatientDashboard() {
-  const [profile, setProfile] = useState({});
   const [records, setRecords] = useState([]);
 
   useEffect(() => {
-    loadData();
+    loadRecords();
   }, []);
 
-  const loadData = async () => {
+  const loadRecords = async () => {
     try {
-      const p = await getProfile();
-      setProfile(p || {});
-      const r = await getMyRecords();
-      setRecords(r || []);
+      const data = await getMyRecords();
+      setRecords(data || []);
     } catch (e) {
-      console.error("Failed to load patient data", e);
+      console.error("Failed to load records", e);
+    }
+  };
+
+  const handleDownload = async (recordId) => {
+    try {
+      const url = await downloadRecord(recordId);
+      window.open(url, "_blank");
+    } catch (e) {
+      alert("Failed to download file");
     }
   };
 
   return (
-    <AppLayout title="Patient Dashboard">
-      {/* PROFILE */}
-      <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} md={6}>
-          <Card sx={{ boxShadow: 4 }}>
+    <AppLayout title="My Medical Records">
+      <Stack spacing={3}>
+        {records.length === 0 && (
+          <Card>
             <CardContent>
-              <Typography variant="h6" fontWeight={700}>
-                My Profile
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-
-              <Typography>
-                <b>Name:</b> {profile.name || "-"}
-              </Typography>
-              <Typography>
-                <b>Age:</b> {profile.age || "-"}
-              </Typography>
-              <Typography>
-                <b>Gender:</b> {profile.gender || "-"}
-              </Typography>
-              <Typography>
-                <b>Disease:</b> {profile.disease || "-"}
+              <Typography align="center" color="text.secondary">
+                No medical records available yet
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        )}
 
-      {/* MEDICAL RECORDS */}
-      <Card sx={{ boxShadow: 4 }}>
-        <CardContent>
-          <Typography variant="h6" fontWeight={700}>
-            My Medical Records
-          </Typography>
+        {records.map((r) => (
+          <Card key={r.id} sx={{ boxShadow: 4 }}>
+            <CardContent>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={2}
+              >
+                <Box>
+                  <Typography fontWeight={700}>Medical Report</Typography>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Secure access to your uploaded medical reports
-          </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Uploaded by: {r.uploadedBy}
+                  </Typography>
 
-          <Divider sx={{ mb: 2 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    Date: {new Date(r.uploadedAt).toLocaleString()}
+                  </Typography>
+                </Box>
 
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <b>ID</b>
-                </TableCell>
-                <TableCell>
-                  <b>Uploaded By</b>
-                </TableCell>
-                <TableCell>
-                  <b>Uploaded At</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>Action</b>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {records.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No medical records available
-                  </TableCell>
-                </TableRow>
-              )}
-
-              {records.map((r) => (
-                <TableRow key={r.id} hover>
-                  <TableCell>{r.id}</TableCell>
-                  <TableCell>{r.uploadedBy}</TableCell>
-                  <TableCell>
-                    {new Date(r.uploadedAt).toLocaleString()}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button
-                      variant="contained"
-                      size="small"
-                      href={`http://localhost:8081/patient/download/${r.id}`}
-                      target="_blank"
-                    >
-                      Download
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                <Stack direction="row" spacing={1}>
+                  <Chip label="Secure" color="success" />
+                  <Button
+                    variant="contained"
+                    onClick={() => handleDownload(r.id)}
+                  >
+                    Download
+                  </Button>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        ))}
+      </Stack>
     </AppLayout>
   );
 }

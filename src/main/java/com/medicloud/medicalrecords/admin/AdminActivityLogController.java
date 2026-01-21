@@ -5,10 +5,12 @@ import com.medicloud.medicalrecords.activity.ActivityLogQueryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/activity-logs")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminActivityLogController {
 
     private final ActivityLogQueryService service;

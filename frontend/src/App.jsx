@@ -1,10 +1,17 @@
+//App.jsx
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-//import Register from "./pages/Register";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminLayout from "./components/AdminLayout";
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAuditLogs from "./pages/admin/AdminAuditLogs";
+
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import PatientDashboard from "./pages/patient/PatientDashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
 import UploadRecord from "./pages/doctor/UploadRecord";
 import MyUploads from "./pages/doctor/MyUploads";
 import DoctorPatientRecords from "./pages/doctor/DoctorPatientRecords";
@@ -13,27 +20,26 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ DEFAULT ROUTE */}
+        {/* DEFAULT */}
         <Route path="/" element={<Navigate to="/login" />} />
-
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/register" element={<Register />} /> */}
 
-        <Route path="/doctor/upload" element={<UploadRecord />} />
-        <Route
-          path="/doctor/patient/:patientId/records"
-          element={<DoctorPatientRecords />}
-        />
-
+        {/* ===== ADMIN ROUTES ===== */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute role="ROLE_ADMIN">
-              <AdminDashboard />
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="activity-logs" element={<AdminAuditLogs />} />
+        </Route>
 
+        {/* ===== DOCTOR ROUTES ===== */}
         <Route
           path="/doctor"
           element={
@@ -42,8 +48,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/doctor/upload" element={<UploadRecord />} />
         <Route path="/doctor/uploads" element={<MyUploads />} />
+        <Route
+          path="/doctor/patient/:patientId/records"
+          element={<DoctorPatientRecords />}
+        />
 
+        {/* ===== PATIENT ROUTES ===== */}
         <Route
           path="/patient"
           element={

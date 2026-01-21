@@ -9,13 +9,14 @@ import {
   TableCell,
   TableBody,
   Button,
+  Stack,
+  Chip,
   Divider,
 } from "@mui/material";
-
 import AppLayout from "../../components/AppLayout";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getPatients } from "../../api/doctor";
+import { useNavigate } from "react-router-dom";
 
 export default function DoctorDashboard() {
   const [patients, setPatients] = useState([]);
@@ -36,82 +37,129 @@ export default function DoctorDashboard() {
 
   return (
     <AppLayout title="Doctor Dashboard">
-      <Card sx={{ boxShadow: 4 }}>
-        <CardContent>
-          <Typography variant="h6" fontWeight={700}>
-            My Patients
-          </Typography>
+      <Stack spacing={3}>
+        {/* ===== TOP SUMMARY CARDS ===== */}
+        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+          <Card sx={{ flex: 1 }}>
+            <CardContent>
+              <Typography variant="overline">Total Patients</Typography>
+              <Typography variant="h4" fontWeight={700}>
+                {patients.length}
+              </Typography>
+            </CardContent>
+          </Card>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Patients assigned to you
-          </Typography>
+          <Card sx={{ flex: 1 }}>
+            <CardContent>
+              <Typography variant="overline">Role</Typography>
+              <Typography variant="h5" fontWeight={600}>
+                Doctor
+              </Typography>
+            </CardContent>
+          </Card>
+        </Stack>
 
-          <Divider sx={{ mb: 2 }} />
+        {/* ===== PATIENT TABLE ===== */}
+        <Card sx={{ boxShadow: 4 }}>
+          <CardContent>
+            <Typography variant="h6" fontWeight={700}>
+              My Patients
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Patients assigned to you
+            </Typography>
 
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <b>Name</b>
-                </TableCell>
-                <TableCell>
-                  <b>Age</b>
-                </TableCell>
-                <TableCell>
-                  <b>Gender</b>
-                </TableCell>
-                <TableCell>
-                  <b>Disease</b>
-                </TableCell>
-                <TableCell align="right">
-                  <b>Actions</b>
-                </TableCell>
-              </TableRow>
-            </TableHead>
+            <Divider sx={{ my: 2 }} />
 
-            <TableBody>
-              {patients.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    No patients found
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "#f5f7fa" }}>
+                  <TableCell>
+                    <b>Name</b>
                   </TableCell>
-                </TableRow>
-              )}
-
-              {patients.map((p) => (
-                <TableRow key={p.id} hover>
-                  <TableCell>{p.name}</TableCell>
-                  <TableCell>{p.age || "-"}</TableCell>
-                  <TableCell>{p.gender || "-"}</TableCell>
-                  <TableCell>{p.disease || "-"}</TableCell>
+                  <TableCell>
+                    <b>Age</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Gender</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Disease</b>
+                  </TableCell>
                   <TableCell align="right">
-                    <Button size="small" variant="outlined" sx={{ mr: 1 }}>
-                      View
-                    </Button>
-
-                    <Button
-                      size="small"
-                      variant="contained"
-                      onClick={() => navigate("/doctor/upload")}
-                    >
-                      Upload Record
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      onClick={() =>
-                        navigate(`/doctor/patient/${p.id}/records`)
-                      }
-                    >
-                      View Records
-                    </Button>
+                    <b>Actions</b>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHead>
+
+              <TableBody>
+                {patients.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">
+                      No patients found
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {patients.map((p) => (
+                  <TableRow key={p.id} hover>
+                    <TableCell>
+                      <Typography fontWeight={600}>{p.name}</Typography>
+                    </TableCell>
+
+                    <TableCell>{p.age || "-"}</TableCell>
+
+                    <TableCell>
+                      {p.gender ? <Chip label={p.gender} size="small" /> : "-"}
+                    </TableCell>
+
+                    <TableCell>
+                      {p.disease ? (
+                        <Chip
+                          label={p.disease}
+                          color="primary"
+                          size="small"
+                          variant="outlined"
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        justifyContent="flex-end"
+                      >
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() =>
+                            navigate(`/doctor/patient/${p.id}/records`)
+                          }
+                        >
+                          View Records
+                        </Button>
+
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={() =>
+                            navigate(`/doctor/upload?patientId=${p.id}`)
+                          }
+                        >
+                          Upload Record
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </Stack>
     </AppLayout>
   );
 }
