@@ -21,7 +21,7 @@ public class MedicalRecordController {
     private final MedicalRecordService recordService;
     private final MedicalRecordRepository recordRepository;
 
-    // ✅ CONSTRUCTOR INJECTION (IMPORTANT)
+    //  CONSTRUCTOR INJECTION
     public MedicalRecordController(
             MedicalRecordService recordService,
             MedicalRecordRepository recordRepository

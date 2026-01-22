@@ -82,7 +82,7 @@ public class DataInitializer {
             System.out.println("--- ALERT: PATIENT1 PASSWORD RE-ENCODED SUCCESSFULLY ---");
         });
 
-        // Ensure superadmin also exists
+
         if (userRepository.findByUsername("superadmin").isEmpty()) {
             User u = new User();
             u.setUsername("superadmin");

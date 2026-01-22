@@ -15,6 +15,8 @@ import PatientDashboard from "./pages/patient/PatientDashboard";
 import UploadRecord from "./pages/doctor/UploadRecord";
 import MyUploads from "./pages/doctor/MyUploads";
 import DoctorPatientRecords from "./pages/doctor/DoctorPatientRecords";
+import AdminRegisterUser from "./pages/admin/AdminRegisterUser";
+
 
 export default function App() {
   return (
@@ -25,7 +27,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
 
         {/* ===== ADMIN ROUTES ===== */}
-        <Route
+        {/* <Route
           path="/admin"
           element={
             <ProtectedRoute role="ROLE_ADMIN">
@@ -37,7 +39,22 @@ export default function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="activity-logs" element={<AdminAuditLogs />} />
-        </Route>
+        </Route> */}
+        <Route
+  path="/admin"
+  element={
+    <ProtectedRoute role="ROLE_ADMIN">
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<Navigate to="dashboard" replace />} />
+  <Route path="dashboard" element={<AdminDashboard />} />
+  <Route path="users" element={<AdminUsers />} />
+  <Route path="users/register" element={<AdminRegisterUser />} />
+  <Route path="activity-logs" element={<AdminAuditLogs />} />
+</Route>
+
 
         {/* ===== DOCTOR ROUTES ===== */}
         <Route

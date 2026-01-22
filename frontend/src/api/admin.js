@@ -23,10 +23,23 @@ export const registerDoctor = async (username, password, specialty) => {
 };
 
 // ===== GET ALL USERS =====
-export const getAllUsers = async () => {
-  const res = await api.get("/admin/users");
+export const getAllUsers = async (
+  page = 0,
+  size = 10,
+  username = "",
+  role = ""
+) => {
+  const res = await api.get("/admin/users", {
+    params: {
+      page,
+      size,
+      username: username || undefined,
+      role: role || undefined,
+    },
+  });
   return res.data;
 };
+
 
 // ===== TOGGLE USER =====
 export const toggleUser = async (id) => {
@@ -48,3 +61,4 @@ export const getActivityLogs = async (page = 0, size = 10) => {
   });
   return res.data;
 };
+
