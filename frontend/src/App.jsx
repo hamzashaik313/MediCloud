@@ -16,7 +16,7 @@ import UploadRecord from "./pages/doctor/UploadRecord";
 import MyUploads from "./pages/doctor/MyUploads";
 import DoctorPatientRecords from "./pages/doctor/DoctorPatientRecords";
 import AdminRegisterUser from "./pages/admin/AdminRegisterUser";
-
+import DoctorLayout from "./components/DoctorLayout";
 
 export default function App() {
   return (
@@ -41,37 +41,39 @@ export default function App() {
           <Route path="activity-logs" element={<AdminAuditLogs />} />
         </Route> */}
         <Route
-  path="/admin"
-  element={
-    <ProtectedRoute role="ROLE_ADMIN">
-      <AdminLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Navigate to="dashboard" replace />} />
-  <Route path="dashboard" element={<AdminDashboard />} />
-  <Route path="users" element={<AdminUsers />} />
-  <Route path="users/register" element={<AdminRegisterUser />} />
-  <Route path="activity-logs" element={<AdminAuditLogs />} />
-</Route>
+          path="/admin"
+          element={
+            <ProtectedRoute role="ROLE_ADMIN">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="users/register" element={<AdminRegisterUser />} />
+          <Route path="activity-logs" element={<AdminAuditLogs />} />
+        </Route>
 
-
+        {/* ===== DOCTOR ROUTES ===== */}
         {/* ===== DOCTOR ROUTES ===== */}
         <Route
           path="/doctor"
           element={
             <ProtectedRoute role="ROLE_DOCTOR">
-              <DoctorDashboard />
+              <DoctorLayout />
             </ProtectedRoute>
           }
-        />
-        <Route path="/doctor/upload" element={<UploadRecord />} />
-        <Route path="/doctor/uploads" element={<MyUploads />} />
-        <Route
-          path="/doctor/patient/:patientId/records"
-          element={<DoctorPatientRecords />}
-        />
-
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DoctorDashboard />} />
+          <Route path="uploads" element={<MyUploads />} />
+          <Route
+            path="patient/:patientId/records"
+            element={<DoctorPatientRecords />}
+          />
+          <Route path="upload" element={<UploadRecord />} />
+        </Route>
         {/* ===== PATIENT ROUTES ===== */}
         <Route
           path="/patient"

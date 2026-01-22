@@ -24,17 +24,33 @@ public class DoctorController {
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
-    // List all patients for the dashboard
+//    // List all patients for the dashboard
+//    @GetMapping("/patients")
+//    public List<Patient> getAllPatients() {
+//        return patientRepository.findAll();
+//    }
+//
+//    // Search for patients by name
+//    @GetMapping("/search")
+//    public List<Patient> searchPatients(@RequestParam String name) {
+//        return patientRepository.findByNameContainingIgnoreCase(name);
+//    }
+
+    //uid
+
+
     @GetMapping("/patients")
-    public List<Patient> getAllPatients() {
+    public List<Patient> getPatients() {
         return patientRepository.findAll();
     }
 
-    // Search for patients by name
-    @GetMapping("/search")
-    public List<Patient> searchPatients(@RequestParam String name) {
-        return patientRepository.findByNameContainingIgnoreCase(name);
+
+    @GetMapping("/patients/search")
+    public List<Patient> searchPatients(@RequestParam String query) {
+        return patientRepository
+                .findByNameContainingIgnoreCaseOrHealthIdContainingIgnoreCase(query, query);
     }
+
 
     // View history of records uploaded by this doctor
     @GetMapping("/my-uploads")

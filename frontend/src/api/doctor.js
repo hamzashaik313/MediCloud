@@ -37,3 +37,10 @@ export const getPatientRecords = async (patientId) => {
   const res = await api.get(`/records/patient/${patientId}`);
   return res.data;
 };
+
+export const searchPatients = async (query) => {
+  const res = await api.get("/doctor/patients/search", {
+    params: { query },
+  });
+  return res.data;
+};
