@@ -17,6 +17,7 @@ import MyUploads from "./pages/doctor/MyUploads";
 import DoctorPatientRecords from "./pages/doctor/DoctorPatientRecords";
 import AdminRegisterUser from "./pages/admin/AdminRegisterUser";
 import DoctorLayout from "./components/DoctorLayout";
+import HospitalSignup from "./pages/HospitalSignup";
 
 export default function App() {
   return (
@@ -83,6 +84,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/hospital/signup" element={<HospitalSignup />} />
       </Routes>
     </BrowserRouter>
   );

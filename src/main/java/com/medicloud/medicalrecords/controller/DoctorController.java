@@ -1,11 +1,15 @@
 package com.medicloud.medicalrecords.controller;
 
+import com.medicloud.medicalrecords.model.Hospital;
 import com.medicloud.medicalrecords.model.MedicalRecord;
 import com.medicloud.medicalrecords.model.Patient;
+import com.medicloud.medicalrecords.model.User;
 import com.medicloud.medicalrecords.repository.MedicalRecordRepository;
 import com.medicloud.medicalrecords.repository.PatientRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.medicloud.medicalrecords.repository.UserRepository;
 
 import java.security.Principal;
 import java.util.List;
@@ -17,11 +21,13 @@ public class DoctorController {
 
     private final PatientRepository patientRepository;
     private final MedicalRecordRepository medicalRecordRepository;
+    private final UserRepository userRepository;
 
     public DoctorController(PatientRepository patientRepository,
-                            MedicalRecordRepository medicalRecordRepository) {
+                            MedicalRecordRepository medicalRecordRepository, UserRepository userRepository) {
         this.patientRepository = patientRepository;
         this.medicalRecordRepository = medicalRecordRepository;
+        this.userRepository = userRepository;
     }
 
 //    // List all patients for the dashboard
@@ -40,8 +46,18 @@ public class DoctorController {
 
 
     @GetMapping("/patients")
-    public List<Patient> getPatients() {
-        return patientRepository.findAll();
+    public List<Patient> getHospitalPatients(Authentication auth) {
+
+        User doctor = userRepository.findByUsername(auth.getName()).orElseThrow();
+
+        Hospital hospital = doctor.getHospital();
+
+        return patientRepository.findAll()
+                .stream()
+                .filter(p -> p.getUser() != null &&
+                        p.getUser().getHospital() != null &&
+                        p.getUser().getHospital().getId().equals(hospital.getId()))
+                .toList();
     }
 
 

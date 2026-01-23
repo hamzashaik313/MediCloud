@@ -53,6 +53,110 @@
 //}
 
 
+//package com.medicloud.medicalrecords.config;
+//
+//import com.medicloud.medicalrecords.security.JwtAuthenticationFilter;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.http.HttpMethod;
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+//import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.http.SessionCreationPolicy;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.web.SecurityFilterChain;
+//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//import org.springframework.web.cors.CorsConfiguration;
+//import org.springframework.web.cors.CorsConfigurationSource;
+//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+//
+//
+//
+//@Configuration
+//@EnableMethodSecurity   //  REQUIRED for @PreAuthorize
+//public class SecurityConfig {
+//
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(
+//            HttpSecurity http,
+//            JwtAuthenticationFilter jwtFilter
+//    ) throws Exception {
+//
+//        http
+//                // CORS
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//
+//                //  Disable CSRF (JWT REST API)
+//                .csrf(csrf -> csrf.disable())
+//
+//                //  Stateless JWT
+//                .sessionManagement(session ->
+//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                )
+//
+//                //  Authorization
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//
+//                        // PUBLIC AUTH ENDPOINTS
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers("/auth/hospital/signup").permitAll()
+//
+//                        // ROLE BASED ACCESS
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/doctor/**").hasRole("DOCTOR")
+//                        .requestMatchers("/patient/**").hasRole("PATIENT")
+//
+//                        // MEDICAL RECORD ACCESS
+//                        .requestMatchers("/records/**").hasAnyRole("ADMIN", "DOCTOR")
+//
+//                        .anyRequest().authenticated()
+//                )
+//
+//
+//                // JWT filter
+//                .addFilterBefore(
+//                        jwtFilter,
+//                        UsernamePasswordAuthenticationFilter.class
+//                );
+//
+//        return http.build();
+//    }
+//
+//    //  Password encoder
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//    //  Authentication manager
+//    @Bean
+//    public AuthenticationManager authenticationManager(
+//            AuthenticationConfiguration authenticationConfiguration
+//    ) throws Exception {
+//        return authenticationConfiguration.getAuthenticationManager();
+//    }
+//
+//    //  CORS CONFIG
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration config = new CorsConfiguration();
+//
+//        config.setAllowCredentials(true);
+//        config.addAllowedOriginPattern("*");
+//        config.addAllowedHeader("*");
+//        config.addAllowedMethod("*");
+//
+//        UrlBasedCorsConfigurationSource source =
+//                new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//
+//        return source;
+//    }
+//}
+
 package com.medicloud.medicalrecords.config;
 
 import com.medicloud.medicalrecords.security.JwtAuthenticationFilter;
@@ -62,7 +166,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,15 +175,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
-
 @Configuration
-@EnableMethodSecurity   //  REQUIRED for @PreAuthorize
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
+            org.springframework.security.config.annotation.web.builders.HttpSecurity http,
             JwtAuthenticationFilter jwtFilter
     ) throws Exception {
 
@@ -88,45 +189,49 @@ public class SecurityConfig {
                 // CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                //  Disable CSRF (JWT REST API)
+                // Disable CSRF
                 .csrf(csrf -> csrf.disable())
 
-                //  Stateless JWT
+                // Stateless JWT
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                //  Authorization
+                // Authorization Rules
                 .authorizeHttpRequests(auth -> auth
-                        // VERY IMPORTANT (OPTIONS preflight)
+                        // Allow preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // Public endpoints
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+
+                        // Role-based access
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")
                         .requestMatchers("/patient/**").hasRole("PATIENT")
+
+                        // Medical records access
                         .requestMatchers("/records/**")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
+                        // Everything else requires auth
                         .anyRequest().authenticated()
                 )
 
-                // JWT filter
-                .addFilterBefore(
-                        jwtFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                // Add JWT Filter
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    //  Password encoder
+    // Password Encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    //  Authentication manager
+    // Authentication Manager
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration
@@ -134,7 +239,7 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    //  CORS CONFIG
+    // CORS Config
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

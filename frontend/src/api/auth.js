@@ -14,6 +14,10 @@ export async function login(username, password) {
 
   return response.data;
 }
+export const registerHospital = async (payload) => {
+  const res = await api.post("/auth/hospital/signup", payload);
+  return res.data;
+};
 
 export function logout() {
   localStorage.removeItem("token");

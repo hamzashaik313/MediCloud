@@ -7,6 +7,7 @@ import com.medicloud.medicalrecords.repository.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
@@ -138,30 +139,44 @@ public class AdminController {
 //        return userRepository.findAll();
 //    }
 
-    @GetMapping("/users")
-    public Page<User> getAllUsers(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) Role role,
-            Pageable pageable
-    ) {
-        if (username != null && role != null) {
-            return userRepository
-                    .findByUsernameContainingIgnoreCaseAndRole(
-                            username, role, pageable
-                    );
-        }
+//    @GetMapping("/users")
+//    public Page<User> getAllUsers(
+//            @RequestParam(required = false) String username,
+//            @RequestParam(required = false) Role role,
+//            Pageable pageable
+//    ) {
+//        if (username != null && role != null) {
+//            return userRepository
+//                    .findByUsernameContainingIgnoreCaseAndRole(
+//                            username, role, pageable
+//                    );
+//        }
+//
+//        if (username != null) {
+//            return userRepository
+//                    .findByUsernameContainingIgnoreCase(username, pageable);
+//        }
+//
+//        if (role != null) {
+//            return userRepository.findByRole(role, pageable);
+//        }
+//
+//        return userRepository.findAll(pageable);
+//    }
+@GetMapping("/users")
+public List<User> getUsers(Authentication auth) {
 
-        if (username != null) {
-            return userRepository
-                    .findByUsernameContainingIgnoreCase(username, pageable);
-        }
+    User admin = userRepository.findByUsername(auth.getName()).orElseThrow();
 
-        if (role != null) {
-            return userRepository.findByRole(role, pageable);
-        }
+    Hospital hospital = admin.getHospital();
 
-        return userRepository.findAll(pageable);
-    }
+    return userRepository.findAll()
+            .stream()
+            .filter(u -> u.getHospital() != null &&
+                    u.getHospital().getId().equals(hospital.getId()))
+            .toList();
+}
+
 
     // ================= ENABLE / DISABLE USER =================
     @PutMapping("/users/{id}/toggle")

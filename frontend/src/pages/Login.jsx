@@ -107,6 +107,9 @@ export default function Login() {
           >
             Sign In
           </Button>
+          <Button onClick={() => navigate("/hospital/signup")}>
+            Register New Hospital
+          </Button>
 
           {/* FOOTER */}
           <Typography
